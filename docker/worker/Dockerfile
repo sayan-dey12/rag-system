@@ -13,8 +13,4 @@ RUN uv pip install --system \
 
 COPY . .
 
-CMD [
-    "python",
-    "-m",
-    "app.workers.worker"
-]
+CMD ["python", "-m", "app.workers.worker"]
