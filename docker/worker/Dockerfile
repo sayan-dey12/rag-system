@@ -2,14 +2,11 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY pyproject.toml .
-
 RUN pip install uv
 
-RUN uv pip install --system \
-    redis \
-    rq \
-    qdrant-client
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --system --frozen
 
 COPY . .
 
