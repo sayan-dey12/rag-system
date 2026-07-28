@@ -6,7 +6,7 @@ RUN pip install uv
 
 COPY pyproject.toml uv.lock ./
 
-RUN uv sync --system --frozen
+RUN uv sync --frozen
 
 COPY . .
 
