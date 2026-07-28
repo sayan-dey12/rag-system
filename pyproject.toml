@@ -1,0 +1,16 @@
+[project]
+name = "rag-system"
+version = "0.1.0"
+description = "Production Ready RAG"
+requires-python = ">=3.12"
+
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "redis",
+    "rq",
+    "qdrant-client",
+    "pydantic-settings",
+]
+
+[tool.uv]
