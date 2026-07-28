@@ -1,5 +1,70 @@
+version: "3.9"
+
 services:
-  vector-db:
-    image: qdrant/qdrant
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/fastapi/Dockerfile
+
     ports:
-      - 6333:6333
+      - "8000:8000"
+
+    env_file:
+      - .env
+
+    depends_on:
+      valkey:
+        condition: service_healthy
+
+      qdrant:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker/Dockerfile
+
+    env_file:
+      - .env
+
+    depends_on:
+      valkey:
+        condition: service_healthy
+
+      qdrant:
+        condition: service_healthy
+
+  valkey:
+    image: valkey/valkey:8
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - valkey-data:/data
+
+    healthcheck:
+      test: ["CMD", "valkey-cli", "PING"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  qdrant:
+    image: qdrant/qdrant:latest
+
+    ports:
+      - "6333:6333"
+
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  qdrant-data:
+  valkey-data:
