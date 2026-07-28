@@ -1,5 +1,4 @@
 services:
-
   api:
     build:
       context: .
@@ -14,9 +13,8 @@ services:
     depends_on:
       valkey:
         condition: service_healthy
-
       qdrant:
-        condition: service_healthy
+        condition: service_started
 
   worker:
     build:
@@ -29,9 +27,8 @@ services:
     depends_on:
       valkey:
         condition: service_healthy
-
       qdrant:
-        condition: service_healthy
+        condition: service_started
 
   valkey:
     image: valkey/valkey:8
@@ -57,12 +54,6 @@ services:
     volumes:
       - qdrant-data:/qdrant/storage
 
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/readyz"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
 volumes:
-  qdrant-data:
   valkey-data:
+  qdrant-data:
