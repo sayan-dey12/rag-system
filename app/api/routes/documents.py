@@ -47,10 +47,11 @@ def upload_document(file: UploadFile = File(...)):
 
     print(f"EXISTS = {saved_path.exists()}")
 
+    absolute_path = saved_path.resolve()
     queue.enqueue(
         index_document,
         document_id,
-        str(saved_path),
+        str(absolute_path),
     )
 
     return UploadResponse(
