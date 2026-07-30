@@ -1,5 +1,12 @@
-import time
+from rq import Worker
 
-while True:
-    print("Worker Alive")
-    time.sleep(10)
+from app.db.valkey import redis_client
+from app.queue.rq import queue
+
+worker = Worker(
+    [queue],
+    connection=redis_client,
+)
+
+if __name__ == "__main__":
+    worker.work()
