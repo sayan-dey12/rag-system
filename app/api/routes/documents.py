@@ -39,8 +39,13 @@ def upload_document(file: UploadFile = File(...)):
 
     saved_path = UPLOAD_DIR / f"{document_id}{extension}"
 
+    print(f"UPLOAD_DIR = {UPLOAD_DIR.resolve()}")
+    print(f"SAVING TO = {saved_path.resolve()}")
+
     with saved_path.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+
+    print(f"EXISTS = {saved_path.exists()}")
 
     queue.enqueue(
         index_document,
