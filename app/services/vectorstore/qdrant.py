@@ -4,7 +4,9 @@ from app.core.config import settings
 from qdrant_client.models import Distance , VectorParams 
 from langchain_core.documents import Document
 from qdrant_client.models import Filter, FieldCondition, MatchValue
-from langchain_qdrant import QdrantVectorStore
+from langchain_qdrant import (
+    QdrantVectorStore  as LangChainQdrantVectorStore
+)
 from app.services.embeddings.factory import EmbeddingFactory
 from app.core.config import settings
 
@@ -14,10 +16,10 @@ class QdrantVectorStore(BaseVectoreStore):
         self.client = qdrant_client
         self.collection = settings.QDRANT_COLLECTION
         
-        self.store = QdrantVectorStore(
+        self.store = LangChainQdrantVectorStore(
             client = self.client,
             collection_name = self.collection,
-            embedding = EmbeddingFactory.get_provider().langchain_embedding,
+            embedding = EmbeddingFactory.get_langchain_embedding()
         )
         
         

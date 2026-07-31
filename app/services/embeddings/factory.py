@@ -15,3 +15,7 @@ class EmbeddingFactory:
             cls._provider = HuggingFaceEmbeddingProvider()
 
         return cls._provider
+    
+    @classmethod
+    def get_langchain_embedding(cls):
+        return cls.get_provider().langchain_embedding
