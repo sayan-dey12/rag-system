@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from langchain_core.documents import Document
 
 
-class BaseVectorStore(ABC):
+class BaseVectoreStore(ABC):
 
     @abstractmethod
     def create_collection(self) -> None:
