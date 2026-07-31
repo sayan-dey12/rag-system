@@ -1,8 +1,7 @@
 from app.db.qdrant import qdrant_client
 from app.services.vectorstore.base import BaseVectoreStore
 from app.core.config import settings
-from qdrant_client.models import Distance , VectorParams , PointStruct
-from uuid import uuid4
+from qdrant_client.models import Distance , VectorParams 
 from langchain_core.documents import Document
 from qdrant_client.models import Filter, FieldCondition, MatchValue
 from langchain_qdrant import QdrantVectorStore
@@ -76,49 +75,6 @@ class QdrantVectorStore(BaseVectoreStore):
             query=query,
             k=limit,
         ) 
-        
-        
-        
-    def upsert(
-        self,
-        document_id: str,
-        chunks: list[Document],
-        vectors: list[list[float]],
-    ) -> None:
-
-        points = []
-
-        for index, (chunk, vector) in enumerate(
-            zip(chunks, vectors)
-        ):
-
-            points.append(
-                PointStruct(
-                    id=str(uuid4()),
-                    vector=vector,
-                    payload={
-                        "document_id": document_id,
-                        "chunk_index": index,
-                        "text": chunk.page_content,
-                        **chunk.metadata,
-                    },
-                )
-            )
-
-        self.client.upsert(
-            collection_name=self.collection,
-            points=points,
-        )
-    
-    
-    def search(self, query_vector: list[float], limit: int = 5):
-        return self.client.query_points(
-            collection_name=self.collection,
-            query= query_vector,
-            limit = limit
-        ).points
-        
-        
     
 
     def delete_document(

@@ -1,42 +1,44 @@
-from abc import ABC , abstractmethod
+from abc import ABC, abstractmethod
+
 from langchain_core.documents import Document
 
-class BaseVectoreStore(ABC):
-    
+
+class BaseVectorStore(ABC):
+
     @abstractmethod
     def create_collection(self) -> None:
         ...
-        
+
     @abstractmethod
-    def delete_colection(self, document_id: str) -> None:
+    def delete_collection(self) -> None:
         ...
-        
+
     @abstractmethod
-    def upsert(
+    def add_documents(
         self,
-        document_id: str,
         chunks: list[Document],
-        vectors: list[list[float]],
     ) -> None:
         ...
-        
+
     @abstractmethod
-    def search(
+    def similarity_search(
         self,
-        query_vector: list[float],
+        query: str,
+        limit: int = 5,
+    ) -> list[Document]:
+        ...
+
+    @abstractmethod
+    def similarity_search_with_score(
+        self,
+        query: str,
         limit: int = 5,
     ):
         ...
-        
-        
-    def add_document(
+
+    @abstractmethod
+    def delete_document(
         self,
-        chunks: list[Document],
-        ) -> None:
-        ...
-        
-    def similarity_search():
-        ...
-        
-    def similarity_search_with_score():
+        document_id: str,
+    ) -> None:
         ...
