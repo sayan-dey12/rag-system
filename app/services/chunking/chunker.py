@@ -11,6 +11,13 @@ class DocumentChunker:
         self._splitter = RecursiveCharacterTextSplitter(
             chunk_size=settings.CHUNK_SIZE,
             chunk_overlap=settings.CHUNK_OVERLAP,
+             separators=[
+                "\n\n",
+                "\n",
+                ". ",
+                " ",
+                "",
+            ],
             length_function=len,
             add_start_index=True,
         )
