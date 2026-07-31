@@ -16,12 +16,21 @@ dependencies = [
     "langchain-community",
     "langchain-qdrant",
     "langchain-huggingface",
+    "langchain-text-splitters",
 
+    "torch",
     "sentence-transformers",
 
     "pypdf",
-
-    "python-multipart"
+    "python-multipart",
 ]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [tool.uv]
