@@ -4,18 +4,24 @@ from app.services.embeddings.base import BaseEmbeddingProvider
 
 
 class HuggingFaceEmbeddingProvider(BaseEmbeddingProvider):
+    
+    _embedding: HuggingFaceEmbeddings | None = None
 
     def __init__(self):
+        
+        if self.__class__._embedding is None: 
 
-        self._embedding = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={
-                "device": "cpu",
-            },
-            encode_kwargs={
-                "normalize_embeddings": True,
-            },
-        )
+            self.__class__._embedding = HuggingFaceEmbeddings(
+                model_name="BAAI/bge-small-en-v1.5",
+                model_kwargs={
+                    "device": "cpu",
+                },
+                encode_kwargs={
+                    "normalize_embeddings": True,
+                },
+            )
+            
+        self._embedding = self.__class__._embedding
 
     def embed_documents(
         self,

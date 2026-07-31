@@ -1,11 +1,17 @@
 from app.services.embeddings.huggingface import (
     HuggingFaceEmbeddingProvider,
 )
+from app.services.embeddings.base import BaseEmbeddingProvider
 
 
 class EmbeddingFactory:
+    
+    _provider: BaseEmbeddingProvider | None = None
 
-    @staticmethod
-    def get_provider():
+    @classmethod
+    def get_provider(cls) -> BaseEmbeddingProvider:
 
-        return HuggingFaceEmbeddingProvider()
+        if cls._provider is None:
+            cls._provider = HuggingFaceEmbeddingProvider()
+
+        return cls._provider
