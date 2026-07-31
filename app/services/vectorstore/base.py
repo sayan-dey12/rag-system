@@ -28,3 +28,15 @@ class BaseVectoreStore(ABC):
     ):
         ...
         
+        
+    def add_document(
+        self,
+        chunks: list[Document],
+        ) -> None:
+        ...
+        
+    def similarity_search():
+        ...
+        
+    def similarity_search_with_score():
+        ...
