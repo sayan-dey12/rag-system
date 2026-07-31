@@ -10,8 +10,14 @@ def index_document(document_id: str, file_path: str) -> None:
         loader = LoaderFactory.get_loader(file_path)
         documents = loader.load(file_path)
         
+        if not documents:
+            raise ValueError("No content found in the document.")
+        
         chunker = DocumentChunker()
         chunks = chunker.split(documents)
+        
+        if not chunks:
+            raise ValueError("No chunks were generated.")
         
         for chunk in chunks:
             chunk.metadata["document_id"] = document_id
@@ -24,22 +30,23 @@ def index_document(document_id: str, file_path: str) -> None:
         vector_store.create_collection()
         vector_store.add_documents(chunks)
         
-        print("Stored successfully in Qdrant")
-
         print("=" * 60)
-        print(f"Document ID : {document_id}")
-        print(f"Pages Loaded : {len(documents)}")
-        print(f"Chunks Created : {len(chunks)}")
+        print("Indexing Completed")
+        print(f"Document ID   : {document_id}")
+        print(f"Pages Loaded  : {len(documents)}")
+        print(f"Chunks Created: {len(chunks)}")
+        print("Stored successfully in Qdrant.")
+        print("=" * 60)
         # print(f"Vectors : {len(vectors)}")
         # print(f"Dimentions : {len(vectors[0])}")
         
 
 
-        for index, chunk in enumerate(chunks[:5]):
-            print(f"\nChunk {index + 1}")
-            print(chunk.page_content[:200])
-            print(f"Metadata : {chunk.metadata}")
-            print("-" * 40)
+        # for index, chunk in enumerate(chunks[:5]):
+        #     print(f"\nChunk {index + 1}")
+        #     print(chunk.page_content[:200])
+        #     print(f"Metadata : {chunk.metadata}")
+        #     print("-" * 40)
     
     except Exception as e:
         print(f"Failed to index document {document_id}: {e}")
