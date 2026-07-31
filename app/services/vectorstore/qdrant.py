@@ -8,38 +8,37 @@ from langchain_qdrant import (
     QdrantVectorStore  as LangChainQdrantVectorStore
 )
 from app.services.embeddings.factory import EmbeddingFactory
-from app.core.config import settings
 
 class QdrantVectorStore(BaseVectoreStore):
     
     def __init__(self):
         self.client = qdrant_client
         self.collection = settings.QDRANT_COLLECTION
-        
-        self.store = LangChainQdrantVectorStore(
-            client = self.client,
-            collection_name = self.collection,
-            embedding = EmbeddingFactory.get_langchain_embedding()
-        )
+        self.store = None
         
         
     def create_collection(self):
         
         collections = self.client.get_collections().collections
-        if any(
+        collection_exists = any(
             c.name == self.collection
             for c in collections
-        ):
-            return
-        
-        self.client.create_collection(
-            collection_name= self.collection,
-            vectors_config = VectorParams(
-                size = settings.EMBEDDING_DIMENSION,
-                distance = Distance.COSINE
-            ),                                                                       
         )
-        
+
+        if not collection_exists:
+            self.client.create_collection(
+                collection_name=self.collection,
+                vectors_config=VectorParams(
+                    size=settings.EMBEDDING_DIMENSION,
+                    distance=Distance.COSINE,
+                ),
+            )
+
+        self.store = LangChainQdrantVectorStore(
+            client=self.client,
+            collection_name=self.collection,
+            embedding=EmbeddingFactory.get_langchain_embedding(),
+        )
         
     def delete_collection(self) -> None:
 
@@ -51,7 +50,12 @@ class QdrantVectorStore(BaseVectoreStore):
     def add_documents(
         self,
         chunks: list[Document],
-    ):
+    ) -> None:
+
+        if self.store is None:
+            raise RuntimeError(
+                "Vector store not initialized. Call create_collection() first."
+            )
 
         self.store.add_documents(chunks)
         
