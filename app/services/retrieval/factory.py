@@ -1,7 +1,7 @@
 from app.services.retrieval.base import BaseRetriever
 from app.services.retrieval.retriever import Retriever
 
-class RetriverFactory:
+class RetrieverFactory:
     _retriever: BaseRetriever | None = None
 
     @classmethod

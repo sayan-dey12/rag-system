@@ -5,6 +5,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     APP_NAME: str = "RAG System"
+    
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
 
     VALKEY_HOST: str
     VALKEY_PORT: int

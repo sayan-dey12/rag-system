@@ -1,76 +1,81 @@
-from app.db.qdrant import qdrant_client
-from app.services.vectorstore.base import BaseVectoreStore
-from app.core.config import settings
-from qdrant_client.models import Distance , VectorParams 
 from langchain_core.documents import Document
-from qdrant_client.models import Filter, FieldCondition, MatchValue
 from langchain_qdrant import (
-    QdrantVectorStore  as LangChainQdrantVectorStore
+    QdrantVectorStore as LangChainQdrantVectorStore,
 )
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    VectorParams,
+)
+
+from app.core.config import settings
+from app.db.qdrant import qdrant_client
 from app.services.embeddings.factory import EmbeddingFactory
+from app.services.vectorstore.base import BaseVectoreStore
+
 
 class QdrantVectorStore(BaseVectoreStore):
-    
+
     def __init__(self):
+
         self.client = qdrant_client
         self.collection = settings.QDRANT_COLLECTION
-        self.store = None
-        
-        
-    def create_collection(self):
-        
-        collections = self.client.get_collections().collections
-        collection_exists = any(
-            c.name == self.collection
-            for c in collections
-        )
 
-        if not collection_exists:
-            self.client.create_collection(
-                collection_name=self.collection,
-                vectors_config=VectorParams(
-                    size=settings.EMBEDDING_DIMENSION,
-                    distance=Distance.COSINE,
-                ),
-            )
+    @property
+    def store(self) -> LangChainQdrantVectorStore:
 
-        self.store = LangChainQdrantVectorStore(
+        return LangChainQdrantVectorStore(
             client=self.client,
             collection_name=self.collection,
             embedding=EmbeddingFactory.get_langchain_embedding(),
         )
-        
+
+    def create_collection(self) -> None:
+
+        collections = self.client.get_collections().collections
+
+        exists = any(
+            collection.name == self.collection
+            for collection in collections
+        )
+
+        if exists:
+            return
+
+        self.client.create_collection(
+            collection_name=self.collection,
+            vectors_config=VectorParams(
+                size=settings.EMBEDDING_DIMENSION,
+                distance=Distance.COSINE,
+            ),
+        )
+
     def delete_collection(self) -> None:
 
         self.client.delete_collection(
-            collection_name=self.collection
+            collection_name=self.collection,
         )
-        
-        
+
     def add_documents(
         self,
         chunks: list[Document],
     ) -> None:
 
-        if self.store is None:
-            raise RuntimeError(
-                "Vector store not initialized. Call create_collection() first."
-            )
-
         self.store.add_documents(chunks)
-        
+
     def similarity_search(
         self,
         query: str,
         limit: int = 5,
-    ):
+    ) -> list[Document]:
 
         return self.store.similarity_search(
             query=query,
             k=limit,
         )
-        
-    
+
     def similarity_search_with_score(
         self,
         query: str,
@@ -80,8 +85,7 @@ class QdrantVectorStore(BaseVectoreStore):
         return self.store.similarity_search_with_score(
             query=query,
             k=limit,
-        ) 
-    
+        )
 
     def delete_document(
         self,
