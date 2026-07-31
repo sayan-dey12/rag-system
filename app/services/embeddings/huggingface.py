@@ -17,7 +17,7 @@ class HuggingFaceEmbeddingProvider(BaseEmbeddingProvider):
             },
         )
 
-    def embed_documents(
+    def embed_document(
         self,
         texts: list[str],
     ) -> list[list[float]]:
