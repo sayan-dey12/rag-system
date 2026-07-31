@@ -1,6 +1,7 @@
 from langchain_huggingface import HuggingFaceEmbeddings
-
 from app.services.embeddings.base import BaseEmbeddingProvider
+from langchain_core.embeddings import Embeddings
+
 
 
 class HuggingFaceEmbeddingProvider(BaseEmbeddingProvider):
@@ -36,3 +37,7 @@ class HuggingFaceEmbeddingProvider(BaseEmbeddingProvider):
     ) -> list[float]:
 
         return self._embedding.embed_query(text)
+    
+    @property
+    def langchain_embedding(self) -> Embeddings:
+        return self._embedding

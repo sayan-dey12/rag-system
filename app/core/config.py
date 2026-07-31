@@ -11,11 +11,15 @@ class Settings(BaseSettings):
 
     QDRANT_HOST: str
     QDRANT_PORT: int
+    
+    QDRANT_COLLECTION: str = "rag_system"
 
     RQ_QUEUE: str
     
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
+    
+    EMBEDDING_DIMENSION: int = 384
 
     model_config = SettingsConfigDict(
         env_file=".env",
