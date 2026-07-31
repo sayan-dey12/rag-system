@@ -10,8 +10,12 @@ services:
     env_file:
       - .env
 
+    environment:
+      HF_HOME: /root/.cache/huggingface
+
     volumes:
       - uploads-data:/app/app/uploads
+      - hf-cache:/root/.cache/huggingface
 
     depends_on:
       valkey:
@@ -27,8 +31,12 @@ services:
     env_file:
       - .env
 
+    environment:
+      HF_HOME: /root/.cache/huggingface
+
     volumes:
       - uploads-data:/app/app/uploads
+      - hf-cache:/root/.cache/huggingface
 
     depends_on:
       valkey:
@@ -62,5 +70,6 @@ services:
 
 volumes:
   uploads-data:
+  hf-cache:
   valkey-data:
   qdrant-data:
