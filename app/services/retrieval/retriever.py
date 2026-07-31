@@ -13,9 +13,9 @@ class Retriever(BaseRetriever):
         self,
         query: str,
         limit: int = 5,
-    ) -> list[Document]:
+    ) -> list[tuple[Document, float]]:
 
-        return self.vector_store.similarity_search(
+        return self.vector_store.similarity_search_with_score(
             query=query,
             limit=limit,
         )

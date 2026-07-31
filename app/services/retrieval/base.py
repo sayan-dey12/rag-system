@@ -10,5 +10,5 @@ class BaseRetriever(ABC):
         self,
         query: str,
         limit: int = 5,
-    ) -> list[Document]:
+    ) -> list[tuple[Document, float]]:
         ...
