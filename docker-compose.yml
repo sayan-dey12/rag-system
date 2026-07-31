@@ -10,6 +10,9 @@ services:
     env_file:
       - .env
 
+    volumes:
+      - uploads-data:/app/app/uploads
+
     depends_on:
       valkey:
         condition: service_healthy
@@ -23,6 +26,9 @@ services:
 
     env_file:
       - .env
+
+    volumes:
+      - uploads-data:/app/app/uploads
 
     depends_on:
       valkey:
@@ -55,5 +61,6 @@ services:
       - qdrant-data:/qdrant/storage
 
 volumes:
+  uploads-data:
   valkey-data:
   qdrant-data:
