@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     QDRANT_PORT: int
 
     RQ_QUEUE: str
+    
+    CHUNK_SIZE: int = 1000
+    CHUNK_OVERLAP: int = 200
 
     model_config = SettingsConfigDict(
         env_file=".env",
