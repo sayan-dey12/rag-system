@@ -11,6 +11,17 @@ dependencies = [
     "rq",
     "qdrant-client",
     "pydantic-settings",
+
+    "langchain",
+    "langchain-community",
+    "langchain-qdrant",
+    "langchain-huggingface",
+
+    "sentence-transformers",
+
+    "pypdf",
+
+    "python-multipart"
 ]
 
 [tool.uv]
