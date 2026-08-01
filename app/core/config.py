@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 200
     
     EMBEDDING_DIMENSION: int = 384
+    
+    
+    GROQ_API_KEY: str
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
 
     model_config = SettingsConfigDict(
         env_file=".env",

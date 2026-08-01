@@ -23,6 +23,8 @@ dependencies = [
 
     "pypdf",
     "python-multipart",
+
+    "groq",
 ]
 
 [[tool.uv.index]]
