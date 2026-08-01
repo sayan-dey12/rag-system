@@ -3,6 +3,7 @@ from app.services.prompts.rag import RAGPromptBuilder
 from app.services.llm.factory import LLMFactory
 
 from app.services.rag.base import BaseRAGService
+from collections.abc import Callable
 
 
 class RAGService(BaseRAGService):
@@ -18,6 +19,7 @@ class RAGService(BaseRAGService):
     def ask(
         self,
         question: str,
+        on_event: Callable[[str], None] | None = None,
     ) -> str:
 
         documents = self.retriever.retrieve(question)
@@ -33,13 +35,29 @@ class RAGService(BaseRAGService):
     def stream(
         self,
         question: str,
+        on_event: Callable[[str], None] | None = None,
     ):
 
+        if on_event:
+            on_event("🔍 Searching knowledge base...")
+            
         documents = self.retriever.retrieve(question)
+        
+        if on_event:
+            on_event(f"✓ Retrieved {len(documents)} chunks")
+
+        if on_event:
+            on_event("🧠 Building prompt...")
 
         prompt = self.prompt_builder.build(
             query=question,
             documents=documents,
         )
+        
+        if on_event:
+            on_event("🤖 Generating answer...")
 
         yield from self.llm.stream(prompt)
+        
+        if on_event:
+            on_event("✅ Done")
