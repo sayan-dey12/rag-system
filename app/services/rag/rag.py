@@ -66,6 +66,7 @@ class RAGService(BaseRAGService):
 
         return self.llm.generate(prompt)
     
+    
     def stream(
         self,
         question: str,
@@ -112,3 +113,11 @@ class RAGService(BaseRAGService):
             )
 
         yield from self.llm.stream(prompt)
+        
+        if on_event:
+            on_event(
+                RAGEvent(
+                    type=EventType.PROMPT,
+                    message="Finished...",
+                )
+            )

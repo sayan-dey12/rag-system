@@ -52,6 +52,8 @@ def upload_document(file: UploadFile = File(...)):
         index_document,
         document_id,
         str(absolute_path),
+        file.filename,
+        job_timeout=1800,
     )
 
     return UploadResponse(
