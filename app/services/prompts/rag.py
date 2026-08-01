@@ -13,7 +13,7 @@ class RAGPromptBuilder(BasePromptBuilder):
 
         context = "\n\n".join(
             f"""
-        Document: {doc.metadata['source']}
+        Document: {doc.metadata['file_name']}
         Page: {doc.metadata['page_label']}
 
         {doc.page_content}

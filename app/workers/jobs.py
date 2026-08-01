@@ -3,7 +3,7 @@ from app.services.chunking.chunker import DocumentChunker
 #from app.services.embeddings.factory import EmbeddingFactory
 from app.services.vectorstore.factory import VectorStoreFactory
 
-def index_document(document_id: str, file_path: str) -> None:
+def index_document(document_id: str, file_path: str, original_filename: str,) -> None:
     
     try:
 
@@ -21,6 +21,12 @@ def index_document(document_id: str, file_path: str) -> None:
         
         for chunk in chunks:
             chunk.metadata["document_id"] = document_id
+            
+            # Display name
+            chunk.metadata["file_name"] = original_filename
+
+            # Internal path (optional)
+            chunk.metadata["storage_path"] = file_path
         
         # embedding_providers = EmbeddingFactory.get_provider()
         # texts = [chunk.page_content for chunk in chunks]
