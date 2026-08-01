@@ -19,3 +19,6 @@ def print_event(event: RAGEvent) -> None:
 
         case EventType.SYSTEM:
             print(f"⚙️  {event.message}")
+            
+        case EventType.DONE:
+            print(f"✅ {event.message}")

@@ -12,6 +12,7 @@ class EventType(str, Enum):
     LLM = "llm"
     TOOL = "tool"
     SYSTEM = "system"
+    DONE = "done"
 
 
 @dataclass(slots=True, frozen=True)
