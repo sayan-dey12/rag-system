@@ -23,7 +23,7 @@ class RAGService(BaseRAGService):
         documents = self.retriever.retrieve(question)
 
         prompt = self.prompt_builder.build(
-            question=question,
+            query=question,
             documents=documents,
         )
 
