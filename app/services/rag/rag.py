@@ -28,3 +28,18 @@ class RAGService(BaseRAGService):
         )
 
         return self.llm.generate(prompt)
+    
+    
+    def stream(
+        self,
+        question: str,
+    ):
+
+        documents = self.retriever.retrieve(question)
+
+        prompt = self.prompt_builder.build(
+            query=question,
+            documents=documents,
+        )
+
+        yield from self.llm.stream(prompt)
