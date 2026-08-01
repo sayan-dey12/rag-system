@@ -35,16 +35,16 @@ class RAGService(BaseRAGService):
 
         documents = self.retriever.retrieve(question)
         
-        print("=" * 80)
-        print(f"Retrieved {len(documents)} documents")
-        print("=" * 80)
+        # print("=" * 80)
+        # print(f"Retrieved {len(documents)} documents")
+        # print("=" * 80)
 
-        for i, (doc, score) in enumerate(documents, start=1):
-            print(f"\nResult {i}")
-            print(f"Score: {score:.4f}")
-            print("Metadata:", doc.metadata)
-            print(doc.page_content[:500])
-            print("-" * 80)
+        # for i, (doc, score) in enumerate(documents, start=1):
+        #     print(f"\nResult {i}")
+        #     print(f"Score: {score:.4f}")
+        #     print("Metadata:", doc.metadata)
+        #     print(doc.page_content[:500])
+        #     print("-" * 80)
 
         if on_event:
             on_event(
@@ -67,7 +67,7 @@ class RAGService(BaseRAGService):
             documents=documents,
         )
         
-        print(prompt)
+        # print(prompt)
 
         if on_event:
             on_event(
@@ -96,16 +96,16 @@ class RAGService(BaseRAGService):
 
         documents = self.retriever.retrieve(question)
         
-        print("=" * 80)
-        print(f"Retrieved {len(documents)} documents")
-        print("=" * 80)
+        # print("=" * 80)
+        # print(f"Retrieved {len(documents)} documents")
+        # print("=" * 80)
 
-        for i, (doc, score) in enumerate(documents, start=1):
-            print(f"\nResult {i}")
-            print(f"Score: {score:.4f}")
-            print("Metadata:", doc.metadata)
-            print(doc.page_content[:500])
-            print("-" * 80)
+        # for i, (doc, score) in enumerate(documents, start=1):
+        #     print(f"\nResult {i}")
+        #     print(f"Score: {score:.4f}")
+        #     print("Metadata:", doc.metadata)
+        #     print(doc.page_content[:500])
+        #     print("-" * 80)
 
         if on_event:
             on_event(
@@ -128,9 +128,9 @@ class RAGService(BaseRAGService):
             documents=documents,
         )
 
-        print("=" * 80)
-        print(prompt)
-        print("=" * 80)
+        # print("=" * 80)
+        # print(prompt)
+        # print("=" * 80)
         
         
         if on_event:
