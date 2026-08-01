@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Callable
+from app.events.models import EventCallback
 from typing import Iterator
 
 
@@ -9,7 +9,7 @@ class BaseRAGService(ABC):
     def ask(
         self,
         question: str,
-        on_event: Callable[[str], None] | None = None,
+        on_event: EventCallback | None = None,
     ) -> str:
         ...
 
@@ -17,6 +17,6 @@ class BaseRAGService(ABC):
     def stream(
         self,
         question: str,
-        on_event: Callable[[str], None] | None = None,
+        on_event: EventCallback | None = None,
     ) -> Iterator[str]:
         ...

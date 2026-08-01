@@ -1,4 +1,4 @@
-from app.events.events import EventType, RAGEvent
+from app.events.models import EventType, RAGEvent
 
 
 def print_event(event: RAGEvent) -> None:
