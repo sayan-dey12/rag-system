@@ -20,7 +20,7 @@ def event(message: str):
 
 # stream the answer
 for token in rag.stream(
-    "Explain Breadth First Search.",
+    "What is Big O?",
     on_event=print_event,
 ):
     print(token, end="", flush=True)

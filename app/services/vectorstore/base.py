@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 
 from langchain_core.documents import Document
+from qdrant_client.models import PointStruct
+
+from app.events.models import EventCallback
 
 
 class BaseVectoreStore(ABC):
@@ -17,6 +20,15 @@ class BaseVectoreStore(ABC):
     def add_documents(
         self,
         chunks: list[Document],
+        on_event: EventCallback | None = None,
+    ) -> None:
+        ...
+
+    @abstractmethod
+    def upsert(
+        self,
+        points: list[PointStruct],
+        on_event: EventCallback | None = None,
     ) -> None:
         ...
 
