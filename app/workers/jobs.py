@@ -3,13 +3,29 @@ from app.services.chunking.chunker import DocumentChunker
 #from app.services.embeddings.factory import EmbeddingFactory
 from app.services.vectorstore.factory import VectorStoreFactory
 from app.events.printer import print_event
+from app.events.models import EventType, RAGEvent
+
 
 def index_document(document_id: str, file_path: str, original_filename: str,) -> None:
     
     try:
+        
+        print_event(
+            RAGEvent(
+                type=EventType.LOADER,
+                message="Loading document...",
+            )
+        )
 
         loader = LoaderFactory.get_loader(file_path)
         documents = loader.load(file_path)
+        
+        print_event(
+            RAGEvent(
+                type=EventType.LOADER,
+                message=f"Loaded {len(documents)} page(s).",
+            )
+        )
         
         if not documents:
             raise ValueError("No content found in the document.")
@@ -38,7 +54,10 @@ def index_document(document_id: str, file_path: str, original_filename: str,) ->
         
         vector_store = VectorStoreFactory.get_store()
         vector_store.create_collection()
-        vector_store.add_documents(chunks)
+        vector_store.add_documents(
+            chunks,
+            on_event=print_event,
+        )
         
         print("=" * 60)
         print("Indexing Completed")

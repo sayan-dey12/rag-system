@@ -32,7 +32,7 @@ class DocumentChunker:
         if on_event:
             on_event(
                 RAGEvent(
-                    type=EventType.SYSTEM,
+                    type=EventType.CHUNKER,
                     message="Splitting document into chunks...",
                 )
             )
@@ -42,7 +42,7 @@ class DocumentChunker:
         if on_event:
             on_event(
                 RAGEvent(
-                    type=EventType.SYSTEM,
+                    type=EventType.CHUNKER,
                     message=f"Created {len(chunks)} chunks.",
                 )
             )

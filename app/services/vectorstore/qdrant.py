@@ -68,7 +68,7 @@ class QdrantVectorStore(BaseVectoreStore):
         if on_event:
             on_event(
                 RAGEvent(
-                    type=EventType.SYSTEM,
+                    type=EventType.EMBEDDING,
                     message=f"Generating embeddings for {len(chunks)} chunks...",
                 )
             )
@@ -78,7 +78,7 @@ class QdrantVectorStore(BaseVectoreStore):
         if on_event:
             on_event(
                 RAGEvent(
-                    type=EventType.SYSTEM,
+                    type=EventType.VECTORSTORE,
                     message="Stored vectors in Qdrant.",
                 )
             )

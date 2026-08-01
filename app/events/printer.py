@@ -5,6 +5,18 @@ def print_event(event: RAGEvent) -> None:
 
     match event.type:
 
+        case EventType.LOADER:
+            print(f"📄 {event.message}")
+
+        case EventType.CHUNKER:
+            print(f"✂️  {event.message}")
+
+        case EventType.EMBEDDING:
+            print(f"🧠 {event.message}")
+
+        case EventType.VECTORSTORE:
+            print(f"🗄️  {event.message}")
+
         case EventType.RETRIEVAL:
             print(f"🔍 {event.message}")
 
@@ -17,8 +29,8 @@ def print_event(event: RAGEvent) -> None:
         case EventType.TOOL:
             print(f"🛠️  {event.message}")
 
-        case EventType.SYSTEM:
-            print(f"⚙️  {event.message}")
-            
         case EventType.DONE:
             print(f"✅ {event.message}")
+
+        case EventType.ERROR:
+            print(f"❌ {event.message}")
