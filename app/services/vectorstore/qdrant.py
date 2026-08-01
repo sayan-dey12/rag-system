@@ -14,6 +14,7 @@ from app.core.config import settings
 from app.db.qdrant import qdrant_client
 from app.services.embeddings.factory import EmbeddingFactory
 from app.services.vectorstore.base import BaseVectoreStore
+from app.events.models import EventCallback, EventType, RAGEvent
 
 
 class QdrantVectorStore(BaseVectoreStore):
@@ -61,9 +62,26 @@ class QdrantVectorStore(BaseVectoreStore):
     def add_documents(
         self,
         chunks: list[Document],
+        on_event: EventCallback | None = None,
     ) -> None:
 
+        if on_event:
+            on_event(
+                RAGEvent(
+                    type=EventType.SYSTEM,
+                    message=f"Generating embeddings for {len(chunks)} chunks...",
+                )
+            )
+
         self.store.add_documents(chunks)
+
+        if on_event:
+            on_event(
+                RAGEvent(
+                    type=EventType.SYSTEM,
+                    message="Stored vectors in Qdrant.",
+                )
+            )
 
     def similarity_search(
         self,

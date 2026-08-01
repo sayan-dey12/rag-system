@@ -2,6 +2,7 @@ from app.services.loaders.factory import LoaderFactory
 from app.services.chunking.chunker import DocumentChunker
 #from app.services.embeddings.factory import EmbeddingFactory
 from app.services.vectorstore.factory import VectorStoreFactory
+from app.events.printer import print_event
 
 def index_document(document_id: str, file_path: str, original_filename: str,) -> None:
     
@@ -14,7 +15,10 @@ def index_document(document_id: str, file_path: str, original_filename: str,) ->
             raise ValueError("No content found in the document.")
         
         chunker = DocumentChunker()
-        chunks = chunker.split(documents)
+        chunks = chunker.split(
+            documents,
+            on_event=print_event,
+        )
         
         if not chunks:
             raise ValueError("No chunks were generated.")
