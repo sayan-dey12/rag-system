@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Iterator
 
 
 class BaseLLM(ABC):
@@ -8,4 +9,11 @@ class BaseLLM(ABC):
         self,
         prompt: str,
     ) -> str:
+        ...
+
+    @abstractmethod
+    def stream(
+        self,
+        prompt: str,
+    ) -> Iterator[str]:
         ...
