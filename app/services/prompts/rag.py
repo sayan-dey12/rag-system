@@ -8,12 +8,15 @@ class RAGPromptBuilder(BasePromptBuilder):
     def build(
         self,
         query: str,
-        documents: list[Document],
+        documents: list[tuple[Document, float]],
     ) -> str:
 
         context = "\n\n".join(
-            document.page_content
-            for document in documents
+            f"""Page {document.metadata.get("page_label")}
+
+        {document.page_content}
+        """
+            for document, score in documents
         )
 
         return f"""You are a helpful AI assistant.
