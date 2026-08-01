@@ -16,6 +16,8 @@ from app.services.embeddings.factory import EmbeddingFactory
 from app.services.vectorstore.base import BaseVectoreStore
 from app.events.models import EventCallback, EventType, RAGEvent
 
+from qdrant_client.models import PointStruct
+
 
 class QdrantVectorStore(BaseVectoreStore):
 
@@ -123,3 +125,32 @@ class QdrantVectorStore(BaseVectoreStore):
                 ]
             ),
         )
+        
+        
+    def upsert(
+        self,
+        points: list[PointStruct],
+        on_event: EventCallback | None = None,
+    ) -> None:
+
+        if on_event:
+            on_event(
+                RAGEvent(
+                    type=EventType.VECTORSTORE,
+                    message=f"Uploading {len(points)} vectors...",
+                )
+            )
+
+        self.client.upsert(
+            collection_name=self.collection,
+            points=points,
+            wait=True,
+        )
+
+        if on_event:
+            on_event(
+                RAGEvent(
+                    type=EventType.VECTORSTORE,
+                    message="Upload complete.",
+                )
+            )
