@@ -39,30 +39,27 @@ class GroqLLM(BaseLLM):
         return response.choices[0].message.content
     
     
+
     def stream(
         self,
         prompt: str,
     ) -> Iterator[str]:
-       
+
         response = self.client.chat.completions.create(
-                    model=settings.GROQ_MODEL,
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": prompt,
-                        }
-                    ],
-                    stream = True,
-                    temperature=0,
-                )
-        
-        parts: list[str] = []
+            model=settings.GROQ_MODEL,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            stream=True,
+            temperature=0,
+        )
 
         for chunk in response:
 
             token = chunk.choices[0].delta.content
 
             if token is not None:
-                parts.append(token)
-
-        return "".join(parts)
+                yield token
