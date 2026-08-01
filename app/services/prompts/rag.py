@@ -12,20 +12,37 @@ class RAGPromptBuilder(BasePromptBuilder):
     ) -> str:
 
         context = "\n\n".join(
-            f"""Page {document.metadata.get("page_label")}
+            f"""
+        Document: {doc.metadata['source']}
+        Page: {doc.metadata['page_label']}
 
-        {document.page_content}
+        {doc.page_content}
         """
-            for document, score in documents
+            for doc, _ in documents
         )
 
         return f"""You are a helpful AI assistant.
 
-Answer the user's question ONLY from the provided context.
+Answer the user's question ONLY using the provided context.
 
-If the context does not contain the answer, reply:
+Guidelines:
 
-"I don't know based on the provided documents."
+1. If the answer exists in the context, answer naturally and clearly.
+2. Do not make up information.
+3. If the answer cannot be found in the context, respond exactly with:
+   "I don't know based on the provided documents."
+4. When your answer uses information from one or more context sections,
+   end your response with a section titled:
+
+   Sources
+
+   For every page you used, list:
+
+   - Page <page number>
+   - File: <file name>
+
+5. Only cite pages that actually contributed to the answer.
+6. Never invent page numbers or file names.
 
 --------------------
 Context
