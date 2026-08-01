@@ -11,15 +11,33 @@ class RAGPromptBuilder(BasePromptBuilder):
         documents: list[tuple[Document, float]],
     ) -> str:
 
-        context = "\n\n".join(
-            f"""
-        Document: {doc.metadata['file_name']}
-        Page: {doc.metadata['page_label']}
+        context_parts: list[str] = []
 
-        {doc.page_content}
-        """
-            for doc, _ in documents
-        )
+        for doc, _ in documents:
+
+            metadata = doc.metadata
+
+            file_name = (
+                metadata.get("file_name")
+                or metadata.get("source")
+                or "Unknown Document"
+            )
+
+            page = metadata.get(
+                "page_label",
+                metadata.get("page", "?"),
+            )
+
+            context_parts.append(
+                f"""
+Document: {file_name}
+Page: {page}
+
+{doc.page_content}
+"""
+            )
+
+        context = "\n\n".join(context_parts)
 
         return f"""You are a helpful AI assistant.
 
@@ -28,21 +46,21 @@ Answer the user's question ONLY using the provided context.
 Guidelines:
 
 1. If the answer exists in the context, answer naturally and clearly.
-2. Do not make up information.
-3. If the answer cannot be found in the context, respond exactly with:
-   "I don't know based on the provided documents."
-4. When your answer uses information from one or more context sections,
-   end your response with a section titled:
+2. Never invent information.
+3. If the answer is not present, reply exactly:
 
-   Sources
+"I don't know based on the provided documents."
 
-   For every page you used, list:
+4. At the end of every answer, include a section titled:
 
-   - Page <page number>
-   - File: <file name>
+Sources
 
-5. Only cite pages that actually contributed to the answer.
-6. Never invent page numbers or file names.
+For every source actually used, list:
+
+- File: <file name>
+- Page: <page number>
+
+5. Never cite pages or files that were not used.
 
 --------------------
 Context
