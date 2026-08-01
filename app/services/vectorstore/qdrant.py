@@ -17,7 +17,8 @@ from app.services.vectorstore.base import BaseVectoreStore
 from app.events.models import EventCallback, EventType, RAGEvent
 
 from qdrant_client.models import PointStruct
-
+from qdrant_client.models import Document as QdrantQuery
+from langchain_core.documents import Document
 
 class QdrantVectorStore(BaseVectoreStore):
 
@@ -154,3 +155,80 @@ class QdrantVectorStore(BaseVectoreStore):
                     message="Upload complete.",
                 )
             )
+            
+    def search(
+        self,
+        query: str,
+        limit: int = 5,
+    ) -> list[Document]:
+
+        embedding_provider = EmbeddingFactory.get_provider()
+
+        query_vector = embedding_provider.embed_query(query)
+
+        response = self.client.query_points(
+            collection_name=self.collection,
+            query=query_vector,
+            limit=limit,
+            with_payload=True,
+        )
+
+        documents: list[Document] = []
+
+        for point in response.points:
+
+            payload = point.payload or {}
+
+            documents.append(
+                Document(
+                    page_content=payload.get("text", ""),
+                    metadata={
+                        key: value
+                        for key, value in payload.items()
+                        if key != "text"
+                    },
+                )
+            )
+
+        return documents
+    
+    def search_with_score(
+        self,
+        query: str,
+        limit: int = 5,
+    ) -> list[tuple[Document, float]]:
+
+        embedding_provider = EmbeddingFactory.get_provider()
+
+        query_vector = embedding_provider.embed_query(query)
+
+        response = self.client.query_points(
+            collection_name=self.collection,
+            query=query_vector,
+            limit=limit,
+            with_payload=True,
+        )
+
+        results: list[tuple[Document, float]] = []
+
+        for point in response.points:
+
+            payload = point.payload or {}
+
+            document = Document(
+                page_content=payload.get("text", ""),
+                metadata={
+                    key: value
+                    for key, value in payload.items()
+                    if key != "text"
+                },
+            )
+
+            results.append(
+                (
+                    document,
+                    point.score,
+                )
+            )
+
+        return results
