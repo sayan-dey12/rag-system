@@ -1,49 +1,36 @@
 from collections.abc import Iterator
-from dataclasses import dataclass
 
-
-@dataclass(slots=True)
-class Message:
-    role: str
-    content: str
+from app.services.prompts.message import PromptMessage
 
 
 class Conversation:
 
     def __init__(self) -> None:
-        self._messages: list[Message] = []
 
-    def add_system(
-        self,
-        message: str,
-    ) -> None:
+        self._messages: list[PromptMessage] = []
+
+    def add_system(self, message: str) -> None:
 
         self._messages.append(
-            Message(
+            PromptMessage(
                 role="system",
                 content=message,
             )
         )
 
-    def add_user(
-        self,
-        message: str,
-    ) -> None:
+    def add_user(self, message: str) -> None:
 
         self._messages.append(
-            Message(
+            PromptMessage(
                 role="user",
                 content=message,
             )
         )
 
-    def add_assistant(
-        self,
-        message: str,
-    ) -> None:
+    def add_assistant(self, message: str) -> None:
 
         self._messages.append(
-            Message(
+            PromptMessage(
                 role="assistant",
                 content=message,
             )
@@ -77,7 +64,7 @@ class Conversation:
 
         self._messages.clear()
 
-    def messages(self) -> list[Message]:
+    def messages(self) -> list[PromptMessage]:
 
         return self._messages.copy()
 
@@ -89,7 +76,7 @@ class Conversation:
 
         return not self._messages
 
-    def __iter__(self) -> Iterator[Message]:
+    def __iter__(self) -> Iterator[PromptMessage]:
 
         return iter(self._messages)
 
