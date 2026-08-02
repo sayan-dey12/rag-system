@@ -32,7 +32,7 @@ class ChatService(BaseChatService):
                 on_event=on_event,
             )
         except Exception:
-            self.conversation.remove_last()
+            self.conversation.remove_last_user()
             raise
         
         #save assistant message
@@ -66,7 +66,7 @@ class ChatService(BaseChatService):
                 yield token
         
         except Exception:
-            self.conversation.remove_last()
+            self.conversation.remove_last_user()
             raise
 
         #
