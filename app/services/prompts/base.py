@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 from langchain_core.documents import Document
 
+from app.services.chat.conversation import Message
+
 
 class BasePromptBuilder(ABC):
 
@@ -9,6 +11,7 @@ class BasePromptBuilder(ABC):
     def build(
         self,
         query: str,
-        documents: list[Document],
+        history: list[Message],
+        documents: list[tuple[Document, float]],
     ) -> str:
         ...

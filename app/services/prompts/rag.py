@@ -1,5 +1,6 @@
 from langchain_core.documents import Document
 
+from app.services.chat.conversation import Message
 from app.services.prompts.base import BasePromptBuilder
 
 
@@ -8,9 +9,21 @@ class RAGPromptBuilder(BasePromptBuilder):
     def build(
         self,
         query: str,
+        history: list[Message],
         documents: list[tuple[Document, float]],
     ) -> str:
 
+        #
+        # Conversation
+        #
+        conversation = "\n".join(
+            f"{message.role.title()}: {message.content}"
+            for message in history
+        )
+
+        #
+        # Retrieved context
+        #
         context_parts: list[str] = []
 
         for doc, _ in documents:
@@ -41,34 +54,44 @@ Page: {page}
 
         return f"""You are a helpful AI assistant.
 
-Answer the user's question ONLY using the provided context.
+You are having a continuous conversation with the user.
 
-Guidelines:
+Use the conversation history when it is relevant.
 
-1. If the answer exists in the context, answer naturally and clearly.
-2. Never invent information.
-3. If the answer is not present, reply exactly:
+Answer the CURRENT question using the retrieved context.
+
+If the current question depends on previous messages,
+use the conversation history to understand it.
+
+Never invent facts that are not present in the retrieved context.
+
+If the answer cannot be found in the retrieved context, reply exactly:
 
 "I don't know based on the provided documents."
 
-4. At the end of every answer, include a section titled:
+At the end of every answer include
 
 Sources
 
-For every source actually used, list:
+For every source actually used, list
 
 - File: <file name>
 - Page: <page number>
 
-5. Never cite pages or files that were not used.
+Never cite documents that were not used.
 
 --------------------
-Context
+Conversation History
+
+{conversation or "No previous conversation."}
+
+--------------------
+Retrieved Context
 
 {context}
 
 --------------------
-Question
+Current Question
 
 {query}
 
