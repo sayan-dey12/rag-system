@@ -1,6 +1,11 @@
 from langchain_core.documents import Document
 
+from app.services.prompts.message import PromptMessage
 from app.services.prompts.base import BasePromptBuilder
+
+from app.services.prompts.system import RAG_SYSTEM_PROMPT
+
+from app.services.prompts.message import PromptMessage
 
 
 class RAGPromptBuilder(BasePromptBuilder):
@@ -8,9 +13,21 @@ class RAGPromptBuilder(BasePromptBuilder):
     def build(
         self,
         query: str,
+        history: list[PromptMessage],
         documents: list[tuple[Document, float]],
     ) -> str:
 
+        #
+        # Conversation
+        #
+        conversation = "\n".join(
+            f"{message.role.title()}: {message.content}"
+            for message in history
+        )
+
+        #
+        # Retrieved context
+        #
         context_parts: list[str] = []
 
         for doc, _ in documents:
@@ -39,39 +56,31 @@ Page: {page}
 
         context = "\n\n".join(context_parts)
 
-        return f"""You are a helpful AI assistant.
+        return [
+            PromptMessage(
+                role="system",
+                content=RAG_SYSTEM_PROMPT,
+            ),
+            PromptMessage(
+                role="user",
+                content=f"""
+        --------------------
+        Conversation History
 
-Answer the user's question ONLY using the provided context.
+        {conversation or "No previous conversation."}
 
-Guidelines:
+        --------------------
+        Retrieved Context
 
-1. If the answer exists in the context, answer naturally and clearly.
-2. Never invent information.
-3. If the answer is not present, reply exactly:
+        {context}
 
-"I don't know based on the provided documents."
+        --------------------
+        Current Question
 
-4. At the end of every answer, include a section titled:
+        {query}
 
-Sources
-
-For every source actually used, list:
-
-- File: <file name>
-- Page: <page number>
-
-5. Never cite pages or files that were not used.
-
---------------------
-Context
-
-{context}
-
---------------------
-Question
-
-{query}
-
---------------------
-Answer
-"""
+        --------------------
+        Answer
+        """,
+            ),
+        ]

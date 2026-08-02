@@ -30,7 +30,7 @@ def print_event(event: RAGEvent) -> None:
             print(f"🛠️  {event.message}")
 
         case EventType.DONE:
-            print(f"✅ {event.message}")
+            print(f"\n✅ {event.message}")
 
         case EventType.ERROR:
             print(f"❌ {event.message}")

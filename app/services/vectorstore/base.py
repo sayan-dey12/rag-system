@@ -4,7 +4,7 @@ from langchain_core.documents import Document
 from qdrant_client.models import PointStruct
 
 from app.events.models import EventCallback
-
+from app.core.config import settings
 
 class BaseVectoreStore(ABC):
 
@@ -36,7 +36,7 @@ class BaseVectoreStore(ABC):
     def similarity_search(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ) -> list[Document]:
         ...
 
@@ -44,7 +44,7 @@ class BaseVectoreStore(ABC):
     def similarity_search_with_score(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ):
         ...
 

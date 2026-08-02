@@ -9,6 +9,8 @@ from app.events.models import (
     EventCallback,
 )
 
+from app.services.prompts.message import PromptMessage
+
 class RAGService(BaseRAGService):
 
     def __init__(self):
@@ -22,6 +24,7 @@ class RAGService(BaseRAGService):
     def ask(
         self,
         question: str,
+        history: list[PromptMessage],
         on_event: EventCallback | None = None,
     ) -> str:
 
@@ -64,6 +67,7 @@ class RAGService(BaseRAGService):
 
         prompt = self.prompt_builder.build(
             query=question,
+            history=history,
             documents=documents,
         )
         
@@ -83,6 +87,7 @@ class RAGService(BaseRAGService):
     def stream(
         self,
         question: str,
+        history: list[PromptMessage],
         on_event: EventCallback | None = None,
     ):
 
@@ -125,6 +130,7 @@ class RAGService(BaseRAGService):
 
         prompt = self.prompt_builder.build(
             query=question,
+            history=history,
             documents=documents,
         )
 
