@@ -49,9 +49,28 @@ class Conversation:
             )
         )
 
-    def remove_last(self) -> None:
+    def remove_last_user(self) -> None:
 
-        if self._messages:
+        if (
+            self._messages
+            and self._messages[-1].role == "user"
+        ):
+            self._messages.pop()
+
+    def remove_last_assistant(self) -> None:
+
+        if (
+            self._messages
+            and self._messages[-1].role == "assistant"
+        ):
+            self._messages.pop()
+
+    def remove_last_system(self) -> None:
+
+        if (
+            self._messages
+            and self._messages[-1].role == "system"
+        ):
             self._messages.pop()
 
     def clear(self) -> None:
@@ -68,7 +87,7 @@ class Conversation:
 
     def is_empty(self) -> bool:
 
-        return len(self._messages) == 0
+        return not self._messages
 
     def __iter__(self) -> Iterator[Message]:
 
