@@ -23,15 +23,18 @@ class GroqLLM(BaseLLM):
         self,
         prompt: str,
     ) -> str:
+        
+        messages = [
+            {
+                "role": message.role,
+                "content": message.content,
+            }
+            for message in prompt
+        ]
 
         response = self.client.chat.completions.create(
             model=settings.GROQ_MODEL,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
+            messages=messages,
             stream = False,
             temperature=0,
         )
@@ -44,15 +47,18 @@ class GroqLLM(BaseLLM):
         self,
         prompt: str,
     ) -> Iterator[str]:
+        
+        messages = [
+            {
+                "role": message.role,
+                "content": message.content,
+            }
+            for message in prompt
+        ]
 
         response = self.client.chat.completions.create(
             model=settings.GROQ_MODEL,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
+            messages=messages,
             stream=True,
             temperature=0,
         )

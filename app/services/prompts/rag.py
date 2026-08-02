@@ -5,6 +5,9 @@ from app.services.prompts.base import BasePromptBuilder
 
 from app.services.prompts.system import RAG_SYSTEM_PROMPT
 
+from app.services.prompts.message import PromptMessage
+
+
 class RAGPromptBuilder(BasePromptBuilder):
 
     def build(
@@ -53,25 +56,31 @@ Page: {page}
 
         context = "\n\n".join(context_parts)
 
-        return f"""
-{RAG_SYSTEM_PROMPT}
+        return [
+            PromptMessage(
+                role="system",
+                content=RAG_SYSTEM_PROMPT,
+            ),
+            PromptMessage(
+                role="user",
+                content=f"""
+        --------------------
+        Conversation History
 
+        {conversation or "No previous conversation."}
 
---------------------
-Conversation History
+        --------------------
+        Retrieved Context
 
-{conversation or "No previous conversation."}
+        {context}
 
---------------------
-Retrieved Context
+        --------------------
+        Current Question
 
-{context}
+        {query}
 
---------------------
-Current Question
-
-{query}
-
---------------------
-Answer
-"""
+        --------------------
+        Answer
+        """,
+            ),
+        ]
