@@ -5,6 +5,7 @@ from qdrant_client.models import PointStruct
 
 from app.events.models import EventCallback
 from app.core.config import settings
+from app.services.documents.models import IndexedDocument
 
 class BaseVectoreStore(ABC):
 
@@ -53,4 +54,10 @@ class BaseVectoreStore(ABC):
         self,
         document_id: str,
     ) -> None:
+        ...
+        
+    @abstractmethod
+    def list_documents(
+        self,
+    ) -> list[IndexedDocument]:
         ...

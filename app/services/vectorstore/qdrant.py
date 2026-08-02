@@ -20,6 +20,10 @@ from qdrant_client.models import PointStruct
 from qdrant_client.models import Document as QdrantQuery
 from langchain_core.documents import Document
 
+from collections import defaultdict
+
+from app.services.documents.models import IndexedDocument
+
 class QdrantVectorStore(BaseVectoreStore):
 
     def __init__(self):
@@ -242,3 +246,60 @@ class QdrantVectorStore(BaseVectoreStore):
             )
 
         return results
+    
+    
+    def list_documents(
+        self,
+    ) -> list[IndexedDocument]:
+
+        grouped: dict[str, IndexedDocument] = {}
+
+        offset = None
+
+        while True:
+
+            points, offset = self.client.scroll(
+                collection_name=self.collection,
+                with_payload=True,
+                with_vectors=False,
+                limit=256,
+                offset=offset,
+            )
+
+            for point in points:
+
+                payload = point.payload or {}
+
+                document_id = payload.get("document_id")
+
+                if document_id is None:
+                    continue
+
+                if document_id not in grouped:
+
+                    grouped[document_id] = IndexedDocument(
+                        document_id=document_id,
+                        file_name=payload.get(
+                            "file_name",
+                            "Unknown",
+                        ),
+                        chunk_count=1,
+                    )
+
+                else:
+
+                    current = grouped[document_id]
+
+                    grouped[document_id] = IndexedDocument(
+                        document_id=current.document_id,
+                        file_name=current.file_name,
+                        chunk_count=current.chunk_count + 1,
+                    )
+
+            if offset is None:
+                break
+
+        return sorted(
+            grouped.values(),
+            key=lambda doc: doc.file_name.lower(),
+        )
