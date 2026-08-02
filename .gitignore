@@ -1,5 +1,5 @@
 .env
 .env.example
 .dockerignore
-.writer.py
-.project_dump.txt
+writer.py
+project_dump.txt
