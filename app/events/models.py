@@ -20,6 +20,8 @@ class EventType(str, Enum):
     CHUNKER = "chunker"
     EMBEDDING = "embedding"
     VECTORSTORE = "vectorstore"
+    
+    BATCH = "batch"
 
 
 @dataclass(slots=True, frozen=True)

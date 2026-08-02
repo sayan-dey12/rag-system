@@ -34,3 +34,6 @@ def print_event(event: RAGEvent) -> None:
 
         case EventType.ERROR:
             print(f"❌ {event.message}")
+            
+        case EventType.BATCH:
+            print(f"📦 {event.message}")
