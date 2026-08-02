@@ -87,6 +87,16 @@ def index_document(
         total_batches = ceil(
             len(chunks) / batch_size
         )
+        
+        print_event(
+            RAGEvent(
+                type=EventType.BATCH,
+                message=(
+                    f"Processing {len(chunks)} chunks "
+                    f"in {total_batches} batches."
+                ),
+            )
+        )
 
         total_vectors = 0
 
@@ -103,12 +113,19 @@ def index_document(
 
             print_event(
                 RAGEvent(
-                    type=EventType.EMBEDDING,
+                    type=EventType.BATCH,
                     message=(
-                        f"Embedding batch "
+                        f"Starting batch "
                         f"{batch_number}/{total_batches} "
-                        f"({len(chunk_batch)} chunks)..."
+                        f"({len(chunk_batch)} chunks)."
                     ),
+                )
+            )
+
+            print_event(
+                RAGEvent(
+                    type=EventType.EMBEDDING,
+                    message="Generating embeddings...",
                 )
             )
 
@@ -127,8 +144,7 @@ def index_document(
                 RAGEvent(
                     type=EventType.EMBEDDING,
                     message=(
-                        f"Embeddings generated "
-                        f"for batch {batch_number}."
+                        f"Generated {len(vectors)} embeddings."
                     ),
                 )
             )
@@ -142,6 +158,32 @@ def index_document(
                 points,
                 on_event=print_event,
             )
+            
+            print_event(
+                RAGEvent(
+                    type=EventType.BATCH,
+                    message=(
+                        f"Completed batch "
+                        f"{batch_number}/{total_batches}."
+                    ),
+                )
+            )
+
+
+        print_event(
+            RAGEvent(
+                type=EventType.BATCH,
+                message="All batches processed.",
+            )
+        )
+
+        print_event(
+            RAGEvent(
+                type=EventType.DONE,
+                message="Indexing completed successfully.",
+            )
+        )
+
 
         print("=" * 60)
         print("Indexing Completed")
