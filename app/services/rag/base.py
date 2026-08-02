@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
 from app.events.models import EventCallback
 from typing import Iterator
-from app.services.chat.conversation import Message
-
+from app.services.prompts.message import PromptMessage
 class BaseRAGService(ABC):
 
     @abstractmethod
     def ask(
         self,
         question: str,
-        history: list[Message],
+        history: list[PromptMessage],
         on_event: EventCallback | None = None,
     ) -> str:
         ...
@@ -18,7 +17,7 @@ class BaseRAGService(ABC):
     def stream(
         self,
         question: str,
-        history: list[Message],
+        history: list[PromptMessage],
         on_event: EventCallback | None = None,
     ) -> Iterator[str]:
         ...

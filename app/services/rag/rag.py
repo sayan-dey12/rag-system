@@ -9,7 +9,7 @@ from app.events.models import (
     EventCallback,
 )
 
-from app.services.chat.conversation import Message
+from app.services.prompts.message import PromptMessage
 
 class RAGService(BaseRAGService):
 
@@ -24,7 +24,7 @@ class RAGService(BaseRAGService):
     def ask(
         self,
         question: str,
-        history: list[Message],
+        history: list[PromptMessage],
         on_event: EventCallback | None = None,
     ) -> str:
 
@@ -87,7 +87,7 @@ class RAGService(BaseRAGService):
     def stream(
         self,
         question: str,
-        history: list[Message],
+        history: list[PromptMessage],
         on_event: EventCallback | None = None,
     ):
 

@@ -1,6 +1,6 @@
 from langchain_core.documents import Document
 
-from app.services.chat.conversation import Message
+from app.services.prompts.message import PromptMessage
 from app.services.prompts.base import BasePromptBuilder
 
 from app.services.prompts.system import RAG_SYSTEM_PROMPT
@@ -13,7 +13,7 @@ class RAGPromptBuilder(BasePromptBuilder):
     def build(
         self,
         query: str,
-        history: list[Message],
+        history: list[PromptMessage],
         documents: list[tuple[Document, float]],
     ) -> str:
 
