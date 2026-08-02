@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     EMBEDDING_BATCH_SIZE: int = 128
     
     RETRIEVAL_TOP_K: int = 20
+    
+    RETRIEVAL_SCORE_THRESHOLD: float = 0.65
 
     model_config = SettingsConfigDict(
         env_file=".env",

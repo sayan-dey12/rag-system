@@ -196,6 +196,7 @@ class QdrantVectorStore(BaseVectoreStore):
         self,
         query: str,
         limit: int = settings.RETRIEVAL_TOP_K,
+        score_threshold: float | None = None,
     ) -> list[tuple[Document, float]]:
 
         embedding_provider = EmbeddingFactory.get_provider()
@@ -212,6 +213,15 @@ class QdrantVectorStore(BaseVectoreStore):
         results: list[tuple[Document, float]] = []
 
         for point in response.points:
+
+            #
+            # Skip weak matches (optional)
+            #
+            if (
+                score_threshold is not None
+                and point.score < score_threshold
+            ):
+                continue
 
             payload = point.payload or {}
 

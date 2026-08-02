@@ -23,4 +23,5 @@ class Retriever(BaseRetriever):
         return self.vector_store.search_with_score(
             query=query,
             limit=limit,
+            score_threshold=settings.RETRIEVAL_SCORE_THRESHOLD
         )
