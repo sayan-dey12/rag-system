@@ -11,7 +11,6 @@ A production-style Retrieval-Augmented Generation (RAG) system built from scratc
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi)
 ![Qdrant](https://img.shields.io/badge/Qdrant-VectorDB-red)
 ![Docker](https://img.shields.io/badge/Docker-Compose-blue?logo=docker)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 </p>
 
@@ -22,6 +21,8 @@ A production-style Retrieval-Augmented Generation (RAG) system built from scratc
 Mini RAG is a modular Retrieval-Augmented Generation (RAG) system built from first principles.
 
 Instead of relying entirely on high-level LangChain abstractions, the project implements each stage of the RAG pipeline as an independent service—from document ingestion and chunking to embeddings, retrieval, prompt construction, conversation memory, and streaming responses.
+
+The architecture is designed around interchangeable providers and factories, making it easy to integrate new LLMs, embedding models, vector stores, and document loaders with minimal changes to the rest of the codebase.
 
 The goal is to demonstrate how production-style RAG systems are designed while keeping every component replaceable and easy to extend.
 
@@ -40,8 +41,8 @@ What began as a small learning project quickly evolved into a modular RAG system
 - 📄 Asynchronous document indexing with FastAPI + RQ Workers
 - ✂️ Configurable document chunking
 - 📦 Batch embedding generation and vector uploads
-- 🧠 Pluggable HuggingFace embedding providers
-- 🗄️ Dual indexing:
+- 🧠 Pluggable embedding providers
+- 🤖 Pluggable LLM providers (Groq, easily extensible to Ollama, OpenAI, Gemini, etc.)- 🗄️ Dual indexing:
   - LangChain automatic storage
   - Manual Qdrant point construction
 - 🔍 Dual retrieval:
@@ -49,43 +50,37 @@ What began as a small learning project quickly evolved into a modular RAG system
   - LangChain retrieval
 - 🎯 Score-threshold filtering
 - 💬 Conversation-aware RAG with session memory
-- ⚡ Streaming responses from Groq
 - 📚 Automatic source citations
 - 🧩 Modular factory-based architecture
 - 📡 Event-driven progress reporting
 - 🐳 Fully Dockerized
+- 🔌 Provider-based architecture for easily adding new LLM and embedding providers
+- 🏗 Easily extendable architecture for new LLMs, embedding models, vector stores, and document loaders
 
 ---
 
 # 🏗 Architecture
 
 ```text
-                User
-                  │
-       ┌──────────┴──────────┐
-       ▼                     ▼
-    FastAPI                 CLI
-       │                     │
-       ▼                     ▼
-  Background Queue      Chat Service
-       │                     │
-       ▼                     ▼
-    RQ Worker          Conversation
-       │                     │
-       ▼                     ▼
- Document Pipeline ─────► RAG Service
-                             │
-                             ▼
-                        Retriever
-                             │
-                             ▼
-                      Prompt Builder
-                             │
-                             ▼
-                          Groq LLM
-                             │
-                             ▼
-                      Streaming Answer
+                         Upload Document
+                               │
+                               ▼
+                         FastAPI Endpoint
+                               │
+                               ▼
+                          Background Job
+                               │
+                               ▼
+                    Loader → Chunker → Embeddings
+                               │
+                               ▼
+                          Point Builder
+                               │
+                               ▼
+                            Qdrant
+                               ▲
+                               │
+User → CLI/API → Retriever → Prompt Builder → LLM → Streaming Response
 ```
 
 ---
@@ -150,8 +145,8 @@ A simple command-line interface for uploading documents, browsing indexed files,
 | Queue | RQ |
 | Broker | Valkey |
 | Vector Database | Qdrant |
-| Embeddings | HuggingFace |
-| LLM | Groq |
+| Embeddings | HuggingFace (Extensible) |
+| LLM | Groq (Extensible) |
 | Chunking | LangChain |
 | Containers | Docker |
 
@@ -164,8 +159,8 @@ A simple command-line interface for uploading documents, browsing indexed files,
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/sayan-dey12/rag-system
-cd mini-rag
+git clone https://github.com/sayan-dey12/rag-system.git
+cd rag
 ```
 
 ## 2. Configure environment variables
@@ -257,14 +252,13 @@ Responses stream token-by-token and maintain session memory during the conversat
 
 Swagger UI:
 
+Interactive API documentation is available at:
+
 ```
 http://localhost:8000/docs
 ```
 
-Available endpoints include:
-
-- Upload documents
-- Health check
+The API currently supports document uploads and health monitoring.
 
 Document indexing runs asynchronously using RQ workers.
 
@@ -275,7 +269,11 @@ Document indexing runs asynchronously using RQ workers.
 - Hybrid Search
 - Cross-Encoder Re-ranking
 - Metadata Filtering
-- Local LLM Support
+- Additional LLM Providers
+    - Ollama
+    - OpenAI
+    - Gemini
+    - Anthropic
 - Multiple Chat Sessions
 - REST Chat API
 - React Dashboard
