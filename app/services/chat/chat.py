@@ -19,15 +19,63 @@ class ChatService(BaseChatService):
         message: str,
         on_event: EventCallback | None = None,
     ) -> str:
-        ...
+        
+        #save user message
+        self.conversation.add_user(message)
+        #ask rag
+        
+        try:
+            
+            answer = self.rag.ask(
+                question=message,
+                history=self.conversation.messages(),
+                on_event=on_event,
+            )
+        except Exception:
+            self.conversation.remove_last()
+            raise
+        
+        #save assistant message
+        self.conversation.add_assistant(answer)
+
+        return answer
 
     def stream(
         self,
         message: str,
         on_event: EventCallback | None = None,
     ) -> Iterator[str]:
-        ...
 
+        #
+        # Save user message
+        #
+        self.conversation.add_user(message)
+
+        response_parts: list[str] = []
+
+        try:
+            
+            for token in self.rag.stream(
+                question=message,
+                history=self.conversation.messages(),
+                on_event=on_event,
+            ):
+
+                response_parts.append(token)
+
+                yield token
+        
+        except Exception:
+            self.conversation.remove_last()
+            raise
+
+        #
+        # Save completed assistant response
+        #
+        self.conversation.add_assistant(
+            "".join(response_parts)
+        )
+        
+    
     def clear(self) -> None:
-
         self.conversation.clear()
