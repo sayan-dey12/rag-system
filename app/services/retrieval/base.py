@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from langchain_core.documents import Document
-
+from app.core.config import settings
 
 class BaseRetriever(ABC):
 
@@ -9,6 +9,6 @@ class BaseRetriever(ABC):
     def retrieve(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ) -> list[tuple[Document, float]]:
         ...

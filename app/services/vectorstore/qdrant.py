@@ -89,7 +89,7 @@ class QdrantVectorStore(BaseVectoreStore):
     def similarity_search(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ) -> list[Document]:
 
         return self.store.similarity_search(
@@ -100,7 +100,7 @@ class QdrantVectorStore(BaseVectoreStore):
     def similarity_search_with_score(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ):
 
         return self.store.similarity_search_with_score(
@@ -159,7 +159,7 @@ class QdrantVectorStore(BaseVectoreStore):
     def search(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ) -> list[Document]:
 
         embedding_provider = EmbeddingFactory.get_provider()
@@ -195,7 +195,7 @@ class QdrantVectorStore(BaseVectoreStore):
     def search_with_score(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ) -> list[tuple[Document, float]]:
 
         embedding_provider = EmbeddingFactory.get_provider()

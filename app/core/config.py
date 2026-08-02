@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
     
     EMBEDDING_BATCH_SIZE: int = 128
+    
+    RETRIEVAL_TOP_K: int = 20
 
     model_config = SettingsConfigDict(
         env_file=".env",

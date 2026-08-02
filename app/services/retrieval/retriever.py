@@ -2,7 +2,7 @@ from langchain_core.documents import Document
 
 from app.services.retrieval.base import BaseRetriever
 from app.services.vectorstore.factory import VectorStoreFactory
-
+from app.core.config import settings
 
 class Retriever(BaseRetriever):
 
@@ -12,7 +12,7 @@ class Retriever(BaseRetriever):
     def retrieve(
         self,
         query: str,
-        limit: int = 5,
+        limit: int = settings.RETRIEVAL_TOP_K,
     ) -> list[tuple[Document, float]]:
 
         # return self.vector_store.similarity_search_with_score(
