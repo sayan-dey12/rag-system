@@ -12,10 +12,10 @@ def print_event(event: RAGEvent) -> None:
             print(f"✂️  {event.message}")
 
         case EventType.EMBEDDING:
-            print(f"🧠 {event.message}")
+            print(f"🧠 {event.message}" , flush=True)
 
         case EventType.VECTORSTORE:
-            print(f"🗄️  {event.message}")
+            print(f"🗄️  {event.message}" , flush=True)
 
         case EventType.RETRIEVAL:
             print(f"🔍 {event.message}")
@@ -34,3 +34,6 @@ def print_event(event: RAGEvent) -> None:
 
         case EventType.ERROR:
             print(f"❌ {event.message}")
+            
+        case EventType.BATCH:
+            print(f"📦 {event.message}" , flush=True)
