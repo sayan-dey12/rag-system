@@ -152,7 +152,7 @@ class RAGService(BaseRAGService):
         if on_event:
             on_event(
                 RAGEvent(
-                    type=EventType.PROMPT,
+                    type=EventType.DONE,
                     message="Finished...",
                 )
             )
