@@ -1,7 +1,10 @@
+from math import ceil
 from pathlib import Path
 
+from app.core.config import settings
 from app.events.models import EventType, RAGEvent
 from app.events.printer import print_event
+from app.services.batching.factory import BatcherFactory
 from app.services.chunking.chunker import DocumentChunker
 from app.services.embeddings.factory import EmbeddingFactory
 from app.services.loaders.factory import LoaderFactory
@@ -54,72 +57,99 @@ def index_document(
 
             chunk.metadata["document_id"] = document_id
 
-            # Human readable
             chunk.metadata["file_name"] = original_filename
 
-            # Internal storage path
             chunk.metadata["storage_path"] = file_path
 
-            # Extra metadata
             chunk.metadata["chunk_index"] = index
-            chunk.metadata["file_type"] = Path(
-                original_filename
-            ).suffix.lower()
 
-        #
-        # Generate embeddings
-        #
-        print_event(
-            RAGEvent(
-                type=EventType.EMBEDDING,
-                message=f"Generating embeddings for {len(chunks)} chunks...",
+            chunk.metadata["file_type"] = (
+                Path(original_filename)
+                .suffix
+                .lower()
             )
-        )
 
+        #
+        # Initialize services
+        #
         embedding_provider = EmbeddingFactory.get_langchain_embedding()
 
-        texts = [
-            chunk.page_content
-            for chunk in chunks
-        ]
+        point_builder = PointBuilderFactory.get_builder()
 
-        vectors = embedding_provider.embed_documents(texts)
-
-        print_event(
-            RAGEvent(
-                type=EventType.EMBEDDING,
-                message="Embeddings generated.",
-            )
-        )
-
-        #
-        # Build Qdrant points
-        #
-        builder = PointBuilderFactory.get_builder()
-
-        points = builder.build(
-            chunks,
-            vectors,
-        )
-
-        #
-        # Store in Qdrant
-        #
         vector_store = VectorStoreFactory.get_store()
+
+        batcher = BatcherFactory.get_batcher()
 
         vector_store.create_collection()
 
-        vector_store.upsert(
-            points,
-            on_event=print_event,
+        batch_size = settings.EMBEDDING_BATCH_SIZE
+
+        total_batches = ceil(
+            len(chunks) / batch_size
         )
+
+        total_vectors = 0
+
+        #
+        # Process batches
+        #
+        for batch_number, chunk_batch in enumerate(
+            batcher.batch(
+                chunks,
+                batch_size,
+            ),
+            start=1,
+        ):
+
+            print_event(
+                RAGEvent(
+                    type=EventType.EMBEDDING,
+                    message=(
+                        f"Embedding batch "
+                        f"{batch_number}/{total_batches} "
+                        f"({len(chunk_batch)} chunks)..."
+                    ),
+                )
+            )
+
+            texts = [
+                chunk.page_content
+                for chunk in chunk_batch
+            ]
+
+            vectors = embedding_provider.embed_documents(
+                texts
+            )
+
+            total_vectors += len(vectors)
+
+            print_event(
+                RAGEvent(
+                    type=EventType.EMBEDDING,
+                    message=(
+                        f"Embeddings generated "
+                        f"for batch {batch_number}."
+                    ),
+                )
+            )
+
+            points = point_builder.build(
+                chunk_batch,
+                vectors,
+            )
+
+            vector_store.upsert(
+                points,
+                on_event=print_event,
+            )
 
         print("=" * 60)
         print("Indexing Completed")
         print(f"Document ID   : {document_id}")
         print(f"Pages Loaded  : {len(documents)}")
         print(f"Chunks Created: {len(chunks)}")
-        print(f"Vectors       : {len(vectors)}")
+        print(f"Vectors       : {total_vectors}")
+        print(f"Batches       : {total_batches}")
         print("Stored successfully in Qdrant.")
         print("=" * 60)
 
